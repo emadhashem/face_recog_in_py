@@ -4,6 +4,9 @@ import cv2
 import face_recognition
 import numpy as np
 from time import sleep
+import urllib.request
+import numpy as np
+
 
 
 def get_encoded_faces():
@@ -34,7 +37,14 @@ def unknown_image_encoded(img):
 
     return encoding
 
-
+def url_to_image(url):
+	# download the image, convert it to a NumPy array, and then read
+	# it into OpenCV format
+	resp = urllib.request.urlopen(url)
+	image = np.asarray(bytearray(resp.read()), dtype="uint8")
+	image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+	# return the image
+	return image
 def classify_face(im):
     """
     will find all of the faces in a given image and label
@@ -46,8 +56,13 @@ def classify_face(im):
     faces = get_encoded_faces()
     faces_encoded = list(faces.values())
     known_face_names = list(faces.keys())
+    # get image from url 
+    
+    img = url_to_image(im)
+    ##############
 
-    img = cv2.imread(im, 1)
+
+    # img = cv2.imread(im, 1)
     #img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
     #img = img[:,:,::-1]
  
@@ -76,7 +91,7 @@ def classify_face(im):
             cv2.rectangle(img, (left-20, bottom -15), (right+20, bottom+20), (255, 0, 0), cv2.FILLED)
             font = cv2.FONT_HERSHEY_DUPLEX
             cv2.putText(img, name, (left -20, bottom + 15), font, 1.0, (255, 255, 255), 2)
-    print(face_names)
+    return face_names
 
     # Display the resulting image
     # while True:
@@ -84,8 +99,7 @@ def classify_face(im):
     #     cv2.imshow('Video', img)
     #     if cv2.waitKey(1) & 0xFF == ord('q'):
     #         return face_names 
-
-
-print(classify_face("test1.jpg"))
+# img = 'https://i.insider.com/5b578baf7708e966e10ff2b6?width=1000&format=jpeg&auto=webp'
+# print(classify_face(img))
 
 
