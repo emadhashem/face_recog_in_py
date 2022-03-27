@@ -10,10 +10,11 @@ def index():
 @app.route('/addimg', methods = ['POST'])
 def addimg():
     img = request.json['img']
+    faces = request.json["faces"]
+
+    resFaces = face_rec.classify_face(img, faces)
     
-    faces = face_rec.classify_face(img)
-    
-    return jsonify({'faces' : faces})
+    return jsonify({'resFaces' : resFaces})
 
 if __name__ == '__main__':
     app.run(debug=True)

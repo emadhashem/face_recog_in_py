@@ -9,7 +9,7 @@ import numpy as np
 
 
 
-def get_encoded_faces():
+def get_encoded_faces(faces):
     """
     looks through the faces folder and encodes all
     the faces
@@ -17,13 +17,13 @@ def get_encoded_faces():
     :return: dict of (name, image encoded)
     """
     encoded = {}
-
-    for dirpath, dnames, fnames in os.walk("./faces"):
-        for f in fnames:
-            if f.endswith(".jpg") or f.endswith(".png"):
-                face = fr.load_image_file("faces/" + f)
-                encoding = fr.face_encodings(face)[0]
-                encoded[f.split(".")[0]] = encoding
+    
+        
+    for fnames in faces:
+        response = urllib.request.urlopen(faces[fnames])
+        face = fr.load_image_file(response)
+        encoding = fr.face_encodings(face)[0]
+        encoded[fnames] = encoding
     
     return encoded
 
@@ -45,7 +45,8 @@ def url_to_image(url):
 	image = cv2.imdecode(image, cv2.IMREAD_COLOR)
 	# return the image
 	return image
-def classify_face(im):
+
+def classify_face(im, urlFaces):
     """
     will find all of the faces in a given image and label
     them if it knows what they are
@@ -53,7 +54,7 @@ def classify_face(im):
     :param im: str of file path
     :return: list of face names
     """
-    faces = get_encoded_faces()
+    faces = get_encoded_faces(urlFaces)
     faces_encoded = list(faces.values())
     known_face_names = list(faces.keys())
     # get image from url 
